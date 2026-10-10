@@ -3,6 +3,7 @@
  * Targeted repair for internal compendium UUIDs left under the old module id.
  * Rewrites only @Compendium[5e-complete.* and Compendium.5e-complete.* references.
  * Default is dry-run; pass --apply to modify packs/*.db in place.
+ * This migration is scoped to the renamed module's internal compendium UUIDs.
  */
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
