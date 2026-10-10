@@ -6,6 +6,7 @@ on:
       - v14-dnd5e-6.0.6-adaptation
     paths:
       - 'tools/fix-module-namespace.mjs'
+      - '.github/workflows/repair-module-namespace.yml'
 
 permissions:
   contents: write
