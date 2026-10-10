@@ -1,0 +1,49 @@
+name: Repair legacy internal compendium namespaces
+
+on:
+  push:
+    branches:
+      - v14-dnd5e-6.0.6-adaptation
+    paths:
+      - 'tools/fix-module-namespace.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  repair-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out adaptation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Repair only internal module namespace references
+        run: node tools/fix-module-namespace.mjs --apply
+      - name: Commit repaired compendium references
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add packs/*.db
+          if git diff --cached --quiet; then
+            echo 'No namespace changes were needed.'
+          else
+            git commit -m 'Repair internal compendium UUID namespaces'
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
+      - name: Run structural audit after repair
+        shell: bash
+        run: node tools/audit-compendia.mjs 2>&1 | tee compendium-audit-report.txt
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repaired-compendium-audit-report
+          path: compendium-audit-report.txt
+          if-no-files-found: warn
+          retention-days: 14
