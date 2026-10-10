@@ -135,6 +135,15 @@
             "private": false
         },
         {
+            "name": "5e-journals",
+            "label": "5e Journals",
+            "system": "dnd5e",
+            "path": "packs/5e-journals.db",
+            "entity": "JournalEntry",
+            "type": "JournalEntry",
+            "private": false
+        },
+        {
             "name": "5e-macros",
             "label": "5e Macros",
             "system": "dnd5e",
@@ -209,6 +218,14 @@
                     "packs": [
                         "5e-roll-tables",
                         "5e-macros"
+                    ]
+                },
+                {
+                    "name": "Rules & Journals",
+                    "sorting": "m",
+                    "color": "#f9e2af",
+                    "packs": [
+                        "5e-journals"
                     ]
                 }
             ]
