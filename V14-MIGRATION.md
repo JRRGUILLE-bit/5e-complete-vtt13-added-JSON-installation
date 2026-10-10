@@ -1,35 +1,36 @@
-# Foundry V14 / dnd5e 6.0.6 adaptation
+# Foundry V14 / dnd5e compatibility audit
 
-Target checked against the official version pages on 2026-10-10: Foundry VTT Version 14 Stable Build 369 (release 14.369) and dnd5e 6.0.6. The official dnd5e package listing identifies 6.0.6 as the current release and requires Foundry 14.367 or newer. This satisfies the user's installed core version.
+Target core: Foundry VTT Version 14 Stable Build 369 (14.369), released 2026-10-08. The official Foundry package listing currently shows dnd5e 6.0.5 as available, requiring Foundry 14.367+. Do not assume a later version is installed unless the user's Foundry system screen confirms it.
 
-This branch is an adaptation workspace, not a claim that the module is already compatible. Do not install it into the live campaign until the migration checks pass.
+This branch is an adaptation workspace, not a claim that the module is compatible. Do not install it into the live campaign until validation passes.
 
 ## Current findings
 
 - The source manifest (`module.json`) declares compatibility through Foundry V13 (`verified: 13.350`, `maximum: 13`). It must not be marked compatible with V14 until runtime validation passes.
 - The compendiums are line-delimited JSON records stored in `packs/*.db`.
-- The sample records contain `_stats.systemVersion: 2.0.3` and `_stats.coreVersion: 10.286`. This is strong evidence that the content originated on an old dnd5e / Foundry generation. The current system may migrate many documents, but it does not prove that every document, activity, effect, macro, and cross-reference works.
-- Some descriptions contain references in the `5e-complete` namespace while the module id in `module.json` is `completecompendium`. Treat these as references requiring validation, not as proof of a broken link: the namespace may be legacy or refer to a different package. Do not globally replace it without resolving targets.
-- The manifest does not declare a `5e-journals` pack, while some content appears to reference it. Determine whether those are valid external/legacy links, missing companion content, or stale references before changing them.
-- Current dnd5e release notes include migrations and fixes for legacy data, but migration behavior needs to be tested with this specific module's content in a disposable world.
+- Sample records contain `_stats.systemVersion: 2.0.3` and `_stats.coreVersion: 10.286`, indicating the content was saved on an older generation of dnd5e and Foundry.
+- Some descriptions contain `5e-complete` compendium references although the manifest id is `completecompendium`. This is a mismatch to investigate, not proof by itself that the references are broken. Resolve the targets before rewriting anything.
+- Some content appears to reference `5e-journals`, which is not declared as a pack in the manifest. Determine whether these are external/legacy links or missing content before editing.
+- The dnd5e 6.0 system generation includes substantial document/activity/effect changes. Successful JSON parsing alone cannot establish that old data works correctly in V14.
 
-## First validation pass
+## Automated inventory
 
-From a local clone of this branch, run:
+Run locally from the module root with Node.js 20 or newer:
 
 ```bash
 node tools/audit-compendia.mjs
 ```
 
-The script is read-only. It checks JSONL parseability, missing/duplicate document IDs, old system/core versions, and compendium reference namespaces/packs. It is an inventory, not proof of runtime compatibility.
+A GitHub Actions workflow is configured to run this read-only audit on relevant changes and upload the text report as an artifact. The workflow must complete successfully before its results can be assessed.
+
+The audit checks JSONL parseability, missing/duplicate IDs, recorded source versions, and legacy compendium link namespaces/packs. It is an inventory, not proof of runtime compatibility.
 
 ## Required before release
 
-1. Preserve the original branch and packs unchanged.
-2. Run the audit against every pack and review every warning; distinguish true broken links from legacy references.
-3. Validate every pack in a disposable Foundry V14.369 world using dnd5e 6.0.6.
+1. Preserve the original source branch and packs unchanged.
+2. Run the automated audit and review each warning, especially references to `5e-complete` and `5e-journals`.
+3. Validate all packs in a disposable Foundry 14.369 world with the exact dnd5e version actually installed (official package listing currently shows 6.0.5).
 4. Confirm pack registration and document types, then test representative actors, items, spells, features, creatures, macros, and roll tables.
-5. Audit compendium UUIDs and cross-pack references, including `5e-journals` references and old `5e-complete` namespace links.
-6. Check rules automation and document fields against dnd5e 6.0.6. Do not assume old data migrates correctly just because JSON parses.
-7. Only after runtime validation, update compatibility metadata and publish an install URL for this branch or a tagged release.
-8. Do not merge into `main` or overwrite the original module until the user explicitly authorizes it.
+5. Check dnd5e document schemas, activities, Active Effects, advancement data, macros, and cross-pack UUIDs.
+6. Only after runtime validation, update compatibility metadata and publish an install URL for the adaptation branch or a tagged release.
+7. Do not merge into `main` or overwrite the original module until the user explicitly authorizes it.
