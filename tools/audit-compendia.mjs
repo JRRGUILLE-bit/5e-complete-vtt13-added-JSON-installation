@@ -68,8 +68,10 @@ try {
         for (const pattern of patterns) for (const match of value.matchAll(pattern)) {
           scannedLinks++;
           const namespace = match[1], pack = match[2];
-          if (!packIds.has(pack)) warn("undeclared-pack-reference", `${file}:${i + 1}: link targets undeclared pack "${pack}" (${namespace}.${pack}.${match[3]}).`);
-          if (namespace !== manifest.id) warn("legacy-or-external-namespace", `${file}:${i + 1}: link namespace "${namespace}" differs from module id "${manifest.id}"; resolve before rewriting.`);
+          if (namespace === manifest.id || namespace === "5e-complete") {
+            if (!packIds.has(pack)) warn("undeclared-internal-pack-reference", `${file}:${i + 1}: internal link targets undeclared pack "${pack}" (${namespace}.${pack}.${match[3]}).`);
+            if (namespace === "5e-complete") warn("legacy-module-namespace", `${file}:${i + 1}: internal link still uses old module id "5e-complete".`);
+          }
         }
       }
     }
