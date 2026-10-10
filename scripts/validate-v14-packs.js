@@ -8,12 +8,18 @@ let docs = 0;
 let legacyData = 0;
 let legacyPermission = 0;
 let badReferences = 0;
+let legacyRollTableResults = 0;
 
 function inspectDocument(doc) {
   if (!doc || typeof doc !== "object") return;
   if (doc.data && !doc.system) legacyData++;
   if (doc.permission && !doc.ownership) legacyPermission++;
   if (Array.isArray(doc.items)) for (const item of doc.items) inspectDocument(item);
+  if (Array.isArray(doc.results)) {
+    for (const result of doc.results) {
+      if (result && (Object.hasOwn(result, "collection") || Object.hasOwn(result, "resultId"))) legacyRollTableResults++;
+    }
+  }
 }
 
 for (const pack of manifest.packs ?? []) {
@@ -51,7 +57,7 @@ console.log(JSON.stringify({
   errors
 }, null, 2));
 if (errors) process.exit(1);
-if (legacyData || legacyPermission || badReferences) {
+if (legacyData || legacyPermission || badReferences || legacyRollTableResults) {
   console.error("Structural legacy fields/references remain. Run scripts/migrate-v14-pack-data.js and review references.");
   process.exit(2);
 }
