@@ -7,16 +7,29 @@ This branch is an **experimental migration** of the existing 5e Complete compend
 - Separate module ID: `5e-complete-v14` (does not overwrite `completecompendium`).
 - Initial V14 manifest metadata has been added.
 - **Not yet runtime-validated** against Foundry VTT V14 Build 369 and D&D 5e 6.0.6.
-- Compendium databases, document schemas, links, macros, and imports still need validation. A manifest update alone does not make the data compatible.
+- Several pack databases now have structural migrations committed (legacy `data` → `system`, `permission` → `ownership`, and internal module-reference updates). The large creature pack still requires the local migration pass below.
+- This is still **not runtime-validated**: D&D 5e 6.0.6 document schemas and macro behavior must be tested in Foundry itself.
 - Keep this branch separate from any live installation and back up worlds before testing.
 
-## Testing plan
+## Prepare and test
 
-1. Install this branch as a separate module in a disposable test world.
+From a checkout of this branch, run:
+
+```sh
+node scripts/migrate-v14-pack-data.js
+node scripts/validate-v14-packs.js
+```
+
+The migration script is idempotent and performs only structural changes that can be inferred safely from legacy documents. It does not rewrite game rules or guarantee that every field matches the current D&D 5e schema. Keep the original checkout/ZIP as a backup because the script updates `.db` files in place.
+
+Then:
+
+1. Install the prepared copy in a disposable Foundry V14 test data directory/world.
 2. Check that all packs are detected and can be opened.
-3. Inspect representative actors, items, spells, classes, subclasses, and tables.
-4. Test importing documents into a test world and check the browser console for migration/schema errors.
-5. Fix pack data and macros based on reproducible errors, then retest.
+3. Inspect representative actors, items, spells, classes, subclasses, roll tables, and journals.
+4. Import documents into the test world; check the browser console for schema, UUID, and migration errors.
+5. Exercise macros individually. Do not assume a macro works merely because it appears in the pack.
+6. Fix reproducible runtime errors and repeat the test pass before using this in a live world.
 
 ## Content and licensing
 
