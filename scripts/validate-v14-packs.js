@@ -9,6 +9,13 @@ let legacyData = 0;
 let legacyPermission = 0;
 let badReferences = 0;
 
+function inspectDocument(doc) {
+  if (!doc || typeof doc !== "object") return;
+  if (doc.data && !doc.system) legacyData++;
+  if (doc.permission && !doc.ownership) legacyPermission++;
+  if (Array.isArray(doc.items)) for (const item of doc.items) inspectDocument(item);
+}
+
 for (const pack of manifest.packs ?? []) {
   const full = path.join(root, pack.path);
   if (!fs.existsSync(full)) {
@@ -28,8 +35,7 @@ for (const pack of manifest.packs ?? []) {
       continue;
     }
     docs++;
-    if (doc.data && !doc.system) legacyData++;
-    if (doc.permission && !doc.ownership) legacyPermission++;
+    inspectDocument(doc);
     const serialized = JSON.stringify(doc);
     if (serialized.includes("5e-complete.")) badReferences++;
   }
