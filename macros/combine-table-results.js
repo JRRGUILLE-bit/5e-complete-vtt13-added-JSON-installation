@@ -1,12 +1,32 @@
-// Pull from local table
-const randomAdj = (await game.tables.getName("table with adjectives").roll()).results[0].getChatText();
-const randomNoun = (await game.tables.getName("table with nouns").roll()).results[0].getChatText();
-const randomWeap = (await game.tables.getName("table with weapon names").roll()).results[0].getChatText();
-const message = `You see a ${randomAdj} ${randomNoun} wielding a ${randomWeap}.`;
-await ChatMessage.create({content: message});
+// Foundry V14 / D&D 5e 6.x
+// Roll one result from each of three RollTables in the current world.
+// Rename these table names to match the RollTables in your world.
 
-// Pull from compendium
-const firstTable = (await game.packs.get("compendium-slug.table-slug").getDocument("table-id").roll()).results[0].getChatText();
-const secondTable =(await game.packs.get("compendium-slug.table-slug").getDocument("table-id").roll()).results[0].getChatText();
-const message = `Your results are ${firstTable} and ${secondTable}!`;
-await ChatMessage.create({content: message});
+const tableNames = [
+  "table with adjectives",
+  "table with nouns",
+  "table with weapon names"
+];
+
+async function rollText(tableName) {
+  const table = game.tables.getName(tableName);
+  if (!table) throw new Error(`Could not find RollTable "${tableName}".`);
+  const result = await table.roll();
+  const row = result.results?.[0];
+  if (!row) throw new Error(`RollTable "${tableName}" returned no result.`);
+  return row.text ?? row.name ?? "";
+}
+
+try {
+  const [adjective, noun, weapon] = await Promise.all(tableNames.map(rollText));
+  const content = `You see a ${adjective} ${noun} wielding a ${weapon}.`;
+  await ChatMessage.create({ content });
+} catch (error) {
+  console.error("Combine Table Results macro failed:", error);
+  ui.notifications.error(error.message ?? "Could not combine RollTable results.");
+}
+
+// For a compendium table, resolve the pack and document first, for example:
+// const pack = game.packs.get("module-name.pack-name");
+// const table = await pack?.getDocument("table-document-id");
+// Then use table.roll() the same way as above.
