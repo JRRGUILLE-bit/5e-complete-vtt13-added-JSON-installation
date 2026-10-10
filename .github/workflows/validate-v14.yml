@@ -1,0 +1,23 @@
+name: Validate V14 compendium structure
+
+on:
+  push:
+    branches: [v14-migration]
+  pull_request:
+    branches: [v14-migration]
+  workflow_dispatch:
+
+jobs:
+  validate-packs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out migration branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply repeatable structural migrations
+        run: node scripts/migrate-v14-pack-data.js
+      - name: Validate pack JSON and manifest paths
+        run: node scripts/validate-v14-packs.js
