@@ -159,6 +159,13 @@
       "entity": "Item",
       "type": "Item",
       "private": false
+    },
+    {
+      "name": "5e-journals",
+      "label": "5e Journals",
+      "system": "dnd5e",
+      "path": "packs/5e-journals.db",
+      "type": "JournalEntry"
     }
   ],
   "packFolders": [
@@ -208,6 +215,14 @@
           "packs": [
             "5e-roll-tables",
             "5e-macros"
+          ]
+        },
+        {
+          "name": "Journals",
+          "sorting": "m",
+          "color": "#a6e3a1",
+          "packs": [
+            "5e-journals"
           ]
         }
       ]
