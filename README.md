@@ -1,59 +1,30 @@
-# 5e Complete
-The full D&D 5th Edition compendium for Foundry VTT.
+# 5e Complete Compendium — V14 migration (2014 rules)
 
-Midas:
+This branch is an **experimental migration** of the existing 5e Complete compendium for Foundry VTT V14 and the D&D 5e system 6.x, with the goal of retaining the legacy 2014-rules content.
 
-I have forked the original 5e-complete compendium as it was no longer working with the current Version of FoundryVTT.
+## Status
 
-The module.json is now updated to the latest specification and has been modified with Folders and Subfolders.
+- Separate module ID: `5e-complete-v14` (does not overwrite `completecompendium`).
+- Initial V14 manifest metadata has been added.
+- **Not yet runtime-validated** against Foundry VTT V14 Build 369 and D&D 5e 6.0.6.
+- Compendium databases, document schemas, links, macros, and imports still need validation. A manifest update alone does not make the data compatible.
+- Keep this branch separate from any live installation and back up worlds before testing.
 
-I will continue to support this Fork for the foreseeable future, as i use it weekly.
+## Testing plan
 
-Currently updating to a new linked Compendium style, external cdn images, tons of item additions and 2024 rules.
+1. Install this branch as a separate module in a disposable test world.
+2. Check that all packs are detected and can be opened.
+3. Inspect representative actors, items, spells, classes, subclasses, and tables.
+4. Test importing documents into a test world and check the browser console for migration/schema errors.
+5. Fix pack data and macros based on reproducible errors, then retest.
 
-Have fun and please remember to "only use content you own"...
+## Content and licensing
 
----
+This project inherits content and history from upstream 5e Complete. Respect the original authors' notices and the applicable licenses. Only use content you are legally entitled to use; do not redistribute non-SRD copyrighted book content without permission. Some entries may be incomplete or reference images unavailable locally.
 
-[Original by Archer](https://github.com/Archer39/5e-complete):
+## Upstream
 
-This module was designed to fill in the holes of the 5e SRD that's included with Foundry, including all of the official classes and their subclasses, spells, races, and so on.
+- Original continuation: https://github.com/mikkelhaas/5e-complete-vtt13-added-JSON-installation
+- Original project: https://github.com/Archer39/5e-complete
 
-A special thanks goes to my friends that have helped get this compendium to where it is, and also a big thank you to [Zhell](https://github.com/krbz999?tab=repositories) for helping with the macros.
-
----
-
-## Disclaimers
-- Please only utilize the resources in this module that you personally own. Treat this as you would downloading a video game ROM and respect the copyright of Wizards of the Coast and other 3rd parties whose homebrew content has been imported
-- This is a work in progress; many class features, spells, races, backgrounds, and feats are still missing.
-- The creatures have image references that you won't have, and I can't think of a way around that. Sorry.
-
----
-
-## Installation
-You can find the latest release here: [Click](https://github.com/xImidasIx/5e-complete/releases/latest) **|Current: V13 - Stable|**
-
-For copyright reasons, 5e Complete will not be published on official platforms. Please install using the `5e-complete-V12.zip` from the [latest release](https://github.com/xImidasIx/5e-complete/releases/download/release/5e-complete-V12.zip) or "possibly" by copying the link address/ URL to module.json and pasting it into FoundryVTT (Untested):
-| 5e Rules Version | Major Version | Minor Version | Link |
-|------|-----------------|--------|---------------------------------------------------------------------------------------------------|
-| 2024 | V13 module.json | 13.350 | SoonTM |
-| 2024 | V12 module.json | 12.343 | SoonTM |
-| 2014 | V13 module.json | 13.350 | [module.json](https://github.com/xImidasIx/5e-complete/releases/download/release-V13/module.json) |
-| 2014 | V12 module.json | 12.343 | [module.json](https://github.com/xImidasIx/5e-complete/releases/download/release/module.json)     |
-
----
-
-## Recommended Modules
-5e Complete has been designed utilizing the following modules and are recommended (but not required):
-- [Dice So Nice](https://gitlab.com/riccisi/foundryvtt-dice-so-nice)
-- [Dynamic Active Effects](https://gitlab.com/tposney/dae)
-- [Item Macro](https://github.com/sdenec/tidy5e-sheet)
-- [Magic Items](https://gitlab.com/riccisi/foundryvtt-magic-items)
-- [Roll Groups](https://github.com/krbz999/rollgroups)
-- [Tidy5e Sheet](https://github.com/sdenec/tidy5e-sheet)
-- [Wild Magic Surge 5e](https://github.com/johnnolan/wild-magic-surge-5e)
-
----
-
-### Final Remarks
-Thank you for trying out this module! Please provide feedback on what might be broken or missing. A massive task that needs attention is automation and creating macros, so should you ever download this module and create your own macros the project would love to import them! Same with updated databases!
+This is a community compatibility effort, not an official Foundry or Wizards of the Coast product.
