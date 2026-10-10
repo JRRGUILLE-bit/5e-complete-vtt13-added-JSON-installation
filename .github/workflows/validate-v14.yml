@@ -21,3 +21,12 @@ jobs:
         run: node scripts/migrate-v14-pack-data.js
       - name: Validate pack JSON and manifest paths
         run: node scripts/validate-v14-packs.js
+      - name: Build prepared module archive
+        run: zip -r 5e-complete-v14-prepared.zip module.json README.md V14-MIGRATION-STATUS.md packs macros scripts
+      - name: Upload prepared module archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: 5e-complete-v14-prepared
+          path: 5e-complete-v14-prepared.zip
+          if-no-files-found: error
+          retention-days: 14
