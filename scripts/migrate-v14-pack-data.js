@@ -18,7 +18,7 @@ if (!fs.existsSync(packsDir)) {
   process.exit(1);
 }
 
-let totals = { files: 0, documents: 0, systemFields: 0, ownershipFields: 0, embeddedItems: 0 };
+let totals = { files: 0, documents: 0, systemFields: 0, ownershipFields: 0, embeddedItems: 0, referencesUpdated: 0 };
 
 function migrateDocument(doc, isEmbedded = false) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) return false;
@@ -71,7 +71,16 @@ for (const filename of fs.readdirSync(packsDir).filter(name => name.endsWith(".d
     }
     totals.documents++;
     if (migrateDocument(doc)) fileChanged = true;
-    output.push(JSON.stringify(doc));
+    let serialized = JSON.stringify(doc);
+    if (serialized.includes("5e-complete.")) {
+      const updated = serialized.replaceAll("5e-complete.", "5e-complete-v14.");
+      if (updated !== serialized) {
+        totals.referencesUpdated += (serialized.match(/5e-complete\./g) ?? []).length;
+        serialized = updated;
+        fileChanged = true;
+      }
+    }
+    output.push(serialized);
   }
 
   if (fileChanged) {
