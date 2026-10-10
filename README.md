@@ -11,6 +11,14 @@ This branch is an **experimental migration** of the existing 5e Complete compend
 - This is still **not runtime-validated**: D&D 5e 6.0.6 document schemas and macro behavior must be tested in Foundry itself.
 - Keep this branch separate from any live installation and back up worlds before testing.
 
+## Download the prepared V14 build
+
+The GitHub Actions workflow runs the structural migration against every pack (including the large creature database), validates the resulting pack files, and publishes a ZIP artifact named `5e-complete-v14-prepared`.
+
+To get it, open the [V14 validation workflow runs](https://github.com/JRRGUILLE-bit/5e-complete-vtt13-added-JSON-installation/actions/workflows/validate-v14.yml), open the latest successful run, and download the artifact from the **Artifacts** section. GitHub keeps these artifacts for 14 days, so use the latest successful run.
+
+This archive is structurally prepared, not yet runtime-certified. Test it in a separate Foundry data directory/world, never over the live campaign.
+
 ## Prepare and test
 
 From a checkout of this branch, run:
