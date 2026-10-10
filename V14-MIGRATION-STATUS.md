@@ -2,44 +2,48 @@
 
 Target: Foundry VTT V14 Build 369, D&D 5e system 6.0.6, legacy 2014-rules compendium.
 
-## Changes made on this branch
+## Changes made on branch `v14-migration`
 
-- Added a separate module ID, `5e-complete-v14`, to avoid colliding with the upstream module ID.
-- Set the manifest compatibility target to Foundry V14 as an **experimental target**, not a claim of tested compatibility.
-- Repointed module metadata at this repository and the migration branch.
-- Registered `packs/5e-journals.db`, which exists in the repository but was not declared in the manifest, as a JournalEntry pack.
-- Documented that the branch is not yet runtime-validated.
+- Added a separate module ID, `5e-complete-v14`, so it does not collide with the upstream `completecompendium` module.
+- Set the manifest compatibility target to Foundry V14 as an experimental target.
+- Added a branch archive URL to the manifest so Foundry can fetch this branch for a test installation.
+- Registered `packs/5e-journals.db`, which existed in the repository but was not declared in the manifest, as a JournalEntry pack.
+- Updated internal compendium references to the new module ID in the backgrounds, classes, feats, races, racial features, subclasses, journals, and roll-table packs.
+- Normalized legacy RollTable result reference keys in the roll-table pack (`collection/resultId` to `documentCollection/documentId`) and removed redundant `rangeL/rangeH` fields.
+- Reworked the Rage and Toggle Rage macros to use modern ActiveEffect properties and embedded-document updates.
+- Reworked the Healing Potion macro to use `item.system` data and modern item use calls.
+- Added this audit so remaining issues and test limits are explicit.
 
-## Findings from inspecting existing files
+## Still unverified — do not call this a finished migration yet
 
-### 1. Pack data is old and needs a migration pass
+### Pack document schema
 
-The compendium files are newline-delimited JSON documents. Representative records still contain legacy Foundry fields such as `permission`, `data.data`-era macro assumptions, and `_stats.systemVersion: "2.0.3"` / `_stats.coreVersion: "10.286"`. That is evidence of old source data, not proof that every record fails. The packs need to be opened and imported in a disposable V14 world to identify actual validation/migration errors.
+Many pack entries still use legacy `data`-shaped document fields. Foundry may migrate some old source data, but it is not safe to assume every compendium document will be accepted correctly by Foundry V14 and D&D 5e 6.0.6. The larger class-feature, item, spell, and creature packs need full inspection and test imports.
 
-### 2. Macros contain legacy D&D 5e APIs
+### More macros
 
-Examples found in the macro compendium include:
-- `i.data.label` and `i.data.disabled` for ActiveEffect properties.
-- `i.data.data.consumableType` and `i.data.data.actionType` for item system fields.
-- Old Roll/ChatMessage and Dialog patterns that need checking against Foundry V14.
-- A Rage macro invoking `game.dnd5e.macros.rollItem` and older ActiveEffect update data.
+Other macros, including Divine Smite, Lay on Hands, and Portent, still need review and testing against the current D&D 5e API. They were not rewritten speculatively because changing resource spending or damage logic without a live test could silently break their behavior.
 
-These macros should be treated as potentially incompatible until tested. Do not assume that changing the manifest updates their API usage.
+### References and content
 
-### 3. Roll table records mix schema generations
+Some records refer to core/system compendiums and external images that may have changed or may not exist in the user's installation. Some entries are incomplete in the upstream project. Pack links need a runtime validation pass after the module loads.
 
-The roll-table pack contains different generations of result fields, including `collection/resultId`, `documentCollection/documentId`, and older compendium references such as `dnd5e.monsters`. References to other modules or core compendiums may be broken or point at renamed packs in the current system.
+## Required runtime test pass
 
-### 4. Content and testing limitations
+1. Back up the Foundry data directory/world first.
+2. Install this branch only in a disposable test world or separate Foundry data directory.
+3. Confirm all declared packs are listed and can be opened.
+4. Import representative actors, items, spells, classes, subclasses, roll tables, and journal entries.
+5. Record the exact browser-console errors and failed document names.
+6. Fix reproducible failures in small commits and repeat the tests.
 
-- The pack data includes references to third-party image URLs and compendiums not guaranteed to exist.
-- Some entries are explicitly incomplete in the upstream README.
-- No live Foundry V14 runtime is available through this repository connector, so compatibility cannot be certified by static inspection alone.
+Static inspection cannot certify runtime compatibility. The manifest's V14 compatibility fields indicate the target, not a successful test.
 
-## Next test pass
+## Content and licensing
 
-1. Install only in a disposable test world or separate Foundry data directory.
-2. Confirm all declared packs appear, including Journals.
-3. Open one record from each pack category and import representative documents.
-4. Capture exact browser-console errors before rewriting pack data.
-5. Fix reproducible failures in small commits, then retest.
+This project inherits content and history from upstream 5e Complete. Respect original authors' notices and applicable licenses. Only use content you are legally entitled to use; do not redistribute non-SRD copyrighted book content without permission. This is not an official Foundry or Wizards of the Coast product.
+
+## Upstream
+
+- https://github.com/mikkelhaas/5e-complete-vtt13-added-JSON-installation
+- https://github.com/Archer39/5e-complete
