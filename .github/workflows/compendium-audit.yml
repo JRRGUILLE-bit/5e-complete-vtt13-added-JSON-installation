@@ -1,0 +1,40 @@
+name: Compendium pre-migration audit
+
+on:
+  push:
+    branches:
+      - v14-dnd5e-6.0.6-adaptation
+    paths:
+      - 'packs/**'
+      - 'module.json'
+      - 'tools/audit-compendia.mjs'
+      - '.github/workflows/compendium-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run read-only compendium audit
+        id: audit
+        shell: bash
+        run: |
+          set -o pipefail
+          node tools/audit-compendia.mjs 2>&1 | tee compendium-audit-report.txt
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compendium-audit-report
+          path: compendium-audit-report.txt
+          if-no-files-found: warn
+          retention-days: 14
