@@ -20,7 +20,7 @@ if (!fs.existsSync(packsDir)) {
 
 let totals = { files: 0, documents: 0, systemFields: 0, ownershipFields: 0, embeddedItems: 0, referencesUpdated: 0 };
 
-function migrateDocument(doc, isEmbedded = false) {
+function migrateDocument(doc) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) return false;
   let changed = false;
 
@@ -42,8 +42,34 @@ function migrateDocument(doc, isEmbedded = false) {
 
   if (Array.isArray(doc.items)) {
     for (const item of doc.items) {
-      if (migrateDocument(item, true)) {
+      if (migrateDocument(item)) {
         totals.embeddedItems++;
+        changed = true;
+      }
+    }
+  }
+
+  // RollTableResult used legacy collection/resultId fields in older Foundry
+  // releases. Current documents use documentCollection/documentId.
+  if (Array.isArray(doc.results)) {
+    for (const result of doc.results) {
+      if (!result || typeof result !== "object") continue;
+      if (result.type === 2) {
+        if (!result.documentCollection && typeof result.collection === "string" && result.collection) {
+          result.documentCollection = result.collection;
+          changed = true;
+        }
+        if (!result.documentId && typeof result.resultId === "string" && result.resultId) {
+          result.documentId = result.resultId;
+          changed = true;
+        }
+      }
+      if (Object.hasOwn(result, "collection")) {
+        delete result.collection;
+        changed = true;
+      }
+      if (Object.hasOwn(result, "resultId")) {
+        delete result.resultId;
         changed = true;
       }
     }
